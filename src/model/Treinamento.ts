@@ -4,130 +4,129 @@ import { DataBaseModel } from "./DatabaseModel.js";
 const database = new DataBaseModel().pool;
 
 //classe que representa um Aluno no sistema
-export class Colaborador {
+export class Treinamento {
 
-    private idColaborador: number = 0;
-    private nome: string;
-    private cpf: string;
-    private email: string;
-    private cargo: string;
+    private idTreinamento: number = 0;
+    private titulo: string;
+    private descricao: string;
+    private cargaHoraria: string;
+    private periodo: string;
 
-    public constructor(_nome: string, _cpf: string, _email: string, _cargo: string) {
-        this.nome = _nome;
-        this.cpf = _cpf;
-        this.email = _email;
-        this.cargo = _cargo;
+    public constructor(_titulo: string, _descricao: string, _cargaHoraria: string, _periodo: string) {
+        this.titulo = _titulo;
+        this.descricao = _descricao;
+        this.cargaHoraria = _cargaHoraria;
+        this.periodo = _periodo;
     }
 
     //método GET e SET
 
-    public getIdColaborador(): number {
-        return this.idColaborador;
+    public getIdTreinamento(): number {
+        return this.idTreinamento;
     }
-    public setIdColaborador(_idColaborador: number): void {
-        this.idColaborador = _idColaborador;
-    }
-
-
-    public getNome() {
-        return this.nome;
-    }
-
-    public setNome(_nome: string) {
-        this.nome = _nome;
+    public setIdTreinamento(_idTreinamento: number): void {
+        this.idTreinamento = _idTreinamento;
     }
 
 
-
-    public getCpf() {
-        return this.cpf;
+    public getTitulo() {
+        return this.titulo;
     }
 
-    public setCpf(_cpf: string) {
-        this.cpf = _cpf;
-    }
-
-    public getEmail() {
-        return this.email;
-    }
-
-    public setEmail(_email: string) {
-        this.email = _email;
+    public setTitulo(_titulo: string) {
+        this.titulo = _titulo;
     }
 
 
-    public getCargo() {
-        return this.cargo;
+    public getDescricao() {
+        return this.descricao;
     }
 
-    public setCargo(_cargo: string) {
-        this.cargo = _cargo;
+    public setDescricao(_descricao: string) {
+        this.descricao = _descricao;
     }
+
+
+    public getCargaHoraria() {
+        return this.cargaHoraria;
+    }
+
+    public setCargaHoraria(_cargaHoraria: string) {
+        this.cargaHoraria = _cargaHoraria;
+    }
+
+
+    public getPeriodo() {
+        return this.periodo;
+    }
+
+    public setPeriodo(_periodo: string) {
+        this.periodo = _periodo;
+    }
+
 
     // MÉTODO PARA ACESSAR O BANCO DE DADOS
     // CRUD Create - READ - Update - Delete
 
-    static async listarColaboradores(): Promise<Array<Colaborador> | null> {
-        let listaDeColaboradores: Array<Colaborador> = [];
+    static async listarTreinamentos(): Promise<Array<Treinamento> | null> {
+        let listaDeTreinamentos: Array<Treinamento> = [];
 
         try {
-            const querySelecColaborador = `SELECT * FROM colaborador;`;
-            const respostaBD = await database.query(querySelecColaborador);
+            const querySelecTreinamentos = `SELECT * FROM treinamento;`;
+            const respostaBD = await database.query(querySelecTreinamentos);
 
-            respostaBD.rows.forEach((colaborador: any) => {
-                let novoColaborador = new Colaborador(
-                    colaborador.nome,
-                    colaborador.cpf,
-                    colaborador.email,
-                    colaborador.cargo,
+            respostaBD.rows.forEach((treinamento: any) => {
+                let novoTreinamento = new Treinamento(
+                    treinamento.titulo,
+                    treinamento.descricao,
+                    treinamento.cargaHoraria,
+                    treinamento.periodo,
                 );
 
-                novoColaborador.setIdColaborador(colaborador.id_colaborador);
+                novoTreinamento.setIdTreinamento(treinamento.id_treinamento);
 
-                listaDeColaboradores.push(novoColaborador);
+                listaDeTreinamentos.push(novoTreinamento);
             });
 
-            return listaDeColaboradores;
+            return listaDeTreinamentos;
         } catch (error) {
             console.log(`Erro ao acessar o modelo: ${error}`);
             return null;
         }
     }
 
-    static async cadastrarColaborador(colaborador: Colaborador): Promise<Boolean> {
+
+    static async cadastrarTreinamentos(treinamento: Treinamento): Promise<Boolean> {
         try {
-
-            const queryInsertColaborador = `INSERT INTO colaborador (nome, cpf, email, cargo)
+            const queryInsertTreinamento = `INSERT INTO treinamento (titulo, descricao, carga_horaria, periodo)
                                       VALUES (
-                                            '${colaborador.getNome().toUpperCase()}',
-                                            '${colaborador.getCpf().toUpperCase()}',
-                                            '${colaborador.getEmail().toUpperCase()}',
-                                            '${colaborador.getCargo().toUpperCase()}'
+                                            '${treinamento.getTitulo().toUpperCase()}',
+                                            '${treinamento.getDescricao().toUpperCase()}',
+                                            '${treinamento.getCargaHoraria().toUpperCase()}',
+                                            '${treinamento.getPeriodo().toUpperCase()}'
                                             )
-                                            RETURNING id_colaborador;`;
+                                            RETURNING id_treinamento;`;
 
-            const result = await database.query(queryInsertColaborador);
-
+            const result = await database.query(queryInsertTreinamento);
             if (result.rows.length > 0) {
-
-                console.log(`Colaborador cadastrado com sucesso. ID: ${result.rows[0].id_colaborador}`);
+                console.log(`Treinamento cadastrado com sucesso. ID: ${result.rows[0].id_ctreinamento}`);
                 return true;
             }
-
             return false;
-
         } catch (error) {
-            console.log(`Erro ao cadastrar Colaborador: ${error}`);
+            console.log(`Erro ao cadastrar Treinamento: ${error}`);
             return false;
         }
     }
 
-    static async removerColaborador(id_colaborador: number): Promise<Boolean> {
+
+    static async removerTreinamento(id_treinamento: number): Promise<Boolean> {
         let queryResult = false;
 
         try {
-            const queryDeleteColaborador = `DELETE FROM colaborador WHERE id_colaborador= ${id_colaborador};`;
-            await database.query(queryDeleteColaborador).then((result: any) => {
+            const queryDeleteTreinamento = `DELETE FROM treinamento WHERE id_treinamento= ${id_treinamento};`;
+
+            await database.query(queryDeleteTreinamento).then((result: any) => {
                 if (result.rowCount != 0) { queryResult = true; };
             });
 
@@ -138,18 +137,19 @@ export class Colaborador {
         }
     }
 
-    static async atualizaColaborador(colaborador: Colaborador): Promise<Boolean> {
+
+    static async atualizaTreinamento(treinamento: Treinamento): Promise<Boolean> {
         let queryResult = false;
 
         try {
-            const queryAtualizarColaborador = `UPDADE colaborador SET
-                                         nome = '${colaborador.getNome().toUpperCase()}', 
-                                         cpf = '${colaborador.getCpf().toUpperCase()}',
-                                         email = '${colaborador.getEmail()}',
-                                         cargo = '${colaborador.getCargo().toUpperCase()}',
-                                        WHERE id_colaborador = ${colaborador.idColaborador};`;
+            const queryAtualizarTreinamento = `UPDADE treinamentos SET
+                                         titulo = '${treinamento.getTitulo().toUpperCase()}', 
+                                         descricao = '${treinamento.getDescricao().toUpperCase()}',
+                                         carga_horaria = '${treinamento.getCargaHoraria()}',
+                                         periodo = '${treinamento.getPeriodo().toUpperCase()}',
+                                        WHERE id_treinamentos = ${treinamento.idTreinamento};`;
 
-            await database.query(queryAtualizarColaborador).then((result: any) => {
+            await database.query(queryAtualizarTreinamento).then((result: any) => {
                 if (result.rowCount != 0) { queryResult = true; }
             });
             return queryResult;
